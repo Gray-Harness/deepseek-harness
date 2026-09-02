@@ -130,7 +130,13 @@ async function run(ctx: Context, task: string, io: HeadlessIo): Promise<void> {
   if (outcome.reason?.kind === 'error') {
     io.stderr.write(`dsh: ${outcome.reason.error.code}: ${outcome.reason.error.message}\n`)
   }
-  io.exit(outcome.reason?.kind === 'completed' ? 0 : 1)
+  const exitCode = outcome.reason?.kind === 'completed' ? 0 : 1
+  io.exit(exitCode)
+  // Headless is a one-shot surface; third-party plugins may leave orphaned
+  // stdio sockets or child processes that keep the event loop alive after
+  // fiber.dispose() settles. Give graceful shutdown a brief window, then force
+  // exit so CLI invocations always return.
+  setTimeout(() => { process.exit(exitCode) }, 500)
 }
 
 /**
