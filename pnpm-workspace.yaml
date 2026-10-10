@@ -14,6 +14,12 @@ packages:
   # closure is what the exe bundles and what the Python runtime distributes.
   - python/sdk-runtime
 
+# Workbench fork (Gray-Harness). pnpm 11 reads pnpm-only settings here, not from
+# .npmrc. The pre-run dependency check shells out to `pnpm install`, which cannot
+# complete on a network that blocks cdn.sheetjs.com, aborting every `pnpm run`
+# before the script starts. Scripts are run explicitly instead.
+verifyDepsBeforeRun: false
+
 overrides:
   'extract-zip>yauzl': '3.4.0'
   '@deepseek-ai/cosmokit': 'link:vendor/cosmokit'
