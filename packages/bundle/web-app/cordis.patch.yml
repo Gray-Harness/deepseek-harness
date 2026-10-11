@@ -339,9 +339,11 @@
     - id: workspace-changes
       name: '@deepseek-ai/dsh-workspace-changes'
 
-    # Sidebar foot trigger opening the fixed-id persistent Gray session.
-    - id: gray-claw
-      name: '@deepseek-ai/dsh-client-gray-claw'
+    # The fixed-id persistent Gray session moved out of the sidebar foot: the
+    # `我的助理` nav row (gray-assistant, a session-bound row over
+    # ui-sidebar's `ctx.navSessions`) is its single entry now. Re-add
+    # `@deepseek-ai/dsh-client-gray-claw` here to restore the foot trigger; the
+    # package is untouched otherwise.
 
     - id: ui-workspace
       name: '@deepseek-ai/dsh-client-ui-workspace'

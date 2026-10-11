@@ -12,6 +12,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type {} from '@deepseek-ai/dsh-client-ui-session/client'
 import type { SidebarPanelMetadata, SidebarRootInjected } from './contract/slots.ts'
 import { HeaderLeadingControls } from './HeaderLeadingControls.tsx'
+import { createNavSessions } from './nav-sessions.ts'
 import { SidebarRoot } from './SidebarRoot.tsx'
 import { en, zh, type SidebarKey } from './locales.ts'
 
@@ -20,6 +21,7 @@ export type {
   SidebarPanelIconOwnerProps, SidebarPanelMetadata,
   SidebarRootComponentProps, SidebarRootInjected, SidebarSectionOwnerProps, SidebarSettingsOwnerProps,
 } from './contract/slots.ts'
+export type { NavSessionBinding, NavSessionHandle, NavSessions } from './nav-sessions.ts'
 export type { SidebarKey } from './locales.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
@@ -45,6 +47,15 @@ export const inject = ['slots', 'layout', 'uiWorkspace', 'locale', 'shortcuts']
 export function apply(ctx: ClientContext): void {
   const workspaceNavigation = ctx.get('uiWorkspace') as unknown as WorkspaceNavigation
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-sidebar: dictionaries')
+  // Session-bound rows (see nav-sessions.ts): plugins claim a panellist id and
+  // resolve its target Session; the click dispatcher below prefers the binding.
+  const navSessions = createNavSessions({
+    warn: (...args: unknown[]) => { console.warn('[ui-sidebar]', ...args) },
+  })
+  ctx.effect(() => {
+    const dispose = ctx.reflect.provide('navSessions', navSessions)
+    return () => { void dispose() }
+  }, 'ui-sidebar: session-bound nav rows')
   const panels = createSnapshotStore<readonly SidebarPanelMetadata[]>([])
   const syncPanels = (): void => {
     const next = ctx.slots.entriesOfSlot('sidebar.panellist').map(({ options }) => {
@@ -68,10 +79,16 @@ export function apply(ctx: ClientContext): void {
     startSession: (workspaceId) => { workspaceNavigation.startSession(workspaceId) },
     toggleSidebar: () => { ctx.layout.toggleSidebar() },
     selectPanel: (id) => {
+      // A session-bound row has no main panel to select; opening its Session is
+      // the whole action (the Session selection clears the active panel itself).
+      if (navSessions.has(id)) {
+        navSessions.open(id)
+        return
+      }
       if (id === 'plugins' || id === 'schedules') ctx.get('productAnalytics')?.track('sidebar_menu_click', { menu_name: id === 'plugins' ? 'plugin' : 'cron' })
       ctx.layout.selectPanel(id)
     },
-    hooks: { panels, shortcuts: ctx.shortcuts.catalog },
+    hooks: { panels, shortcuts: ctx.shortcuts.catalog, navSessions: navSessions.bound },
   })
   ctx.slots.inject('sidebar', () => ctx.slots.register({
     name: 'sidebar',

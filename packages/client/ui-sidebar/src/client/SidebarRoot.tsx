@@ -22,6 +22,7 @@ import {
   FishLogo, IconNewChatOutlineMedium, IconNewChatOutlineRegular, IconPanelLeftOutlineRegular, isDarwinDesktop, ShortcutKeys, Tooltip,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { InjectFace, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import type {
   SidebarPanelMetadata, SidebarRootComponentProps, SidebarRootInjected, SidebarSectionOwnerProps,
 } from './contract/slots.ts'
@@ -51,13 +52,11 @@ function localBuildVersion(): string | undefined {
 type PanelRowProps =
   Pick<SidebarPanelMetadata, 'id' | 'label'>
   & Pick<SidebarSectionOwnerProps, 'wide'>
-  & Pick<PropsRuntime<'sidebar'>, 'usePanelInfo'>
   & Pick<InjectFace<SidebarRootInjected>, 'selectPanel'>
   & PropsRenderSlots<'sidebar.panellist'>
 
-/** Each panel row subscribes only to its own selection state. */
-function PanelRow({ id, label, wide, usePanelInfo, selectPanel, renderSlot }: PanelRowProps) {
-  const active = usePanelInfo(info => info.activePanelId === id)
+/** The row's single button: identity, both display states, and the icon share. */
+function PanelRowButton({ id, label, wide, active, selectPanel, renderSlot }: PanelRowProps & { active: boolean }) {
   return (
     <Tooltip label={label} delayMs={500} disabled={wide}>
       <button
@@ -80,6 +79,27 @@ function PanelRow({ id, label, wide, usePanelInfo, selectPanel, renderSlot }: Pa
   )
 }
 
+/** Each panel row subscribes only to its own selection state. */
+function PanelRow({ id, label, wide, selectPanel, renderSlot, usePanelInfo }: PanelRowProps & Pick<PropsRuntime<'sidebar'>, 'usePanelInfo'>) {
+  const active = usePanelInfo(info => info.activePanelId === id)
+  return <PanelRowButton id={id} label={label} wide={wide} active={active} selectPanel={selectPanel} renderSlot={renderSlot} />
+}
+
+/**
+ * A row a plugin bound to a Session instead of a `main` panel key
+ * (`ctx.navSessions`): opening a Session clears the active panel rather than
+ * setting one, so the row reads its Session's `mainView` retention — the same
+ * "what the centre shows" signal ui-workspace uses for its session list.
+ */
+function SessionPanelRow(
+  { id, label, wide, sessionId, selectPanel, renderSlot, useSessions }: PanelRowProps
+    & { sessionId: SessionId | undefined }
+    & Pick<PropsRuntime<'sidebar'>, 'useSessions'>,
+) {
+  const active = useSessions(state => sessionId !== undefined && (state.byId[sessionId]?.retainedBy.mainView ?? 0) > 0)
+  return <PanelRowButton id={id} label={label} wide={wide} active={active} selectPanel={selectPanel} renderSlot={renderSlot} />
+}
+
 /**
  * Render the sidebar column shell.
  * @param props - composed slot props (runtime share + injected callbacks, contract/slots.ts).
@@ -94,10 +114,15 @@ export function SidebarRoot({
   usePanels,
   useShortcuts,
   usePanelInfo,
+  useSessions,
+  useNavSessions,
   t,
   renderSlot,
 }: SidebarRootComponentProps) {
   const panels = usePanels(snapshot => snapshot)
+  // Session-bound rows: key presence marks the id as claimed, the value is its
+  // target Session (undefined until the registrant resolves it).
+  const navSessions = useNavSessions(snapshot => snapshot)
   const shortcut = useShortcuts(rows => rows.find(row => row.id === 'sidebar.left.toggle'))
   const newShortcut = useShortcuts(rows => rows.find(row => row.id === 'session.new'))
   const toggleLabel = collapsed ? t('toggle.open') : t('toggle.collapse')
@@ -281,15 +306,30 @@ export function SidebarRoot({
       {panels.length > 0 && (
         <nav className={css.panelList} aria-label={t('panels.label')}>
           {panels.map(({ id, label }) => (
-            <PanelRow
-              key={id}
-              id={id}
-              label={label}
-              wide={wide}
-              usePanelInfo={usePanelInfo}
-              selectPanel={selectPanel}
-              renderSlot={renderSlot}
-            />
+            Object.prototype.hasOwnProperty.call(navSessions, id)
+              ? (
+                <SessionPanelRow
+                  key={id}
+                  id={id}
+                  label={label}
+                  wide={wide}
+                  sessionId={navSessions[id]}
+                  selectPanel={selectPanel}
+                  renderSlot={renderSlot}
+                  useSessions={useSessions}
+                />
+              )
+              : (
+                <PanelRow
+                  key={id}
+                  id={id}
+                  label={label}
+                  wide={wide}
+                  usePanelInfo={usePanelInfo}
+                  selectPanel={selectPanel}
+                  renderSlot={renderSlot}
+                />
+              )
           ))}
         </nav>
       )}
