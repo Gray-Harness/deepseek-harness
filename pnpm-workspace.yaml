@@ -24,6 +24,17 @@ overrides:
   'extract-zip>yauzl': '3.4.0'
   '@deepseek-ai/cosmokit': 'link:vendor/cosmokit'
   '@deepseek-ai/schemastery': 'link:vendor/schemastery'
+  # cdn.sheetjs.com is unreachable on this network, which aborts `pnpm install`
+  # (and therefore build:lib:client and the desktop package step). The consumer
+  # pins xlsx by URL in ui-sidebar-documentpreview/package.json; serve the
+  # identical bytes (sha256 8dc73fc3b00203e72d176e85b50938627c7b086e607c682e8d3c22c02bb99fe8,
+  # 2409319 bytes) from the repo instead. The upstream manifest stays untouched
+  # so the fork keeps merging cleanly.
+  # Path note: deliberately NOT under vendor/ — scripts/gen-third-party-notices.ts
+  # enumerates every vendor/* directory as a source-vendored package and requires
+  # a package.json plus a vendor/README.md manifest row for each, so a bare
+  # tarball directory there fails the pre-commit notices job.
+  xlsx: 'file:third-party/tarballs/xlsx-0.20.3.tgz'
 
 peerDependencyRules:
   allowedVersions:
