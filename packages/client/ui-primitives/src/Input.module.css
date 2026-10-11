@@ -1,9 +1,9 @@
 .wrap {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 32px;
-  padding: 0 8px;
+  gap: var(--dsw-space-6);
+  height: var(--dsw-space-32);
+  padding: 0 var(--dsw-space-8);
   border: 0.5px solid var(--dsw-alias-border-l4);
   border-radius: var(--dsw-radius-md);
   background: var(--dsw-alias-bg-layer-1);
@@ -28,8 +28,8 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 14px;
-  line-height: 22px;
+  font-size: var(--dsw-font-size-base);
+  line-height: var(--dsw-line-height-base);
   color: var(--dsw-alias-label-primary);
 }
 

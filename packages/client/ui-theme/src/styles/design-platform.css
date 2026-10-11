@@ -550,3 +550,55 @@ html body[data-ds-dark-theme] {
   --dsw-radius-xl: 16px;
   --dsw-radius-panel: 16px;
 }
+
+/* ---------------------------------------------------------------------------
+ * Workbench fork (Gray-Harness): Trae Solo spacing + type ladders.
+ *
+ * SAMPLED, not invented. Source: the user's dump of the running Trae CN client
+ * (`~/Downloads/trae-styles.css`, the *resolved* icube registry — 5554 names):
+ *   --Spacers-spacer-{0,2,4,6,8,12,16,20,24,28,32,40}
+ *   --body-{xs,sm,md,base}-{fontSize,lineHeight} = 10/14, 11/16, 12/18, 13/20
+ *
+ * WHY A LADDER AND NOT PER-COMPONENT VALUES: Trae is not internally
+ * consistent. The same `.icube-tooltip-text.icube-simple-style` is 13px/20 in
+ * the workbench sheet and 11px/16 in the solo-lite sheet that loads after and
+ * overrides it; buttons run 25/26/28/32px tall; scrollbars 4/5/6px wide (and a
+ * `border-radius: 4px` thumb on a 6px bar clamps to a full capsule anyway, so
+ * that "difference" is not one). So the transferable part of the design
+ * language is the vocabulary, and each per-component snap needs its own
+ * sample. This block declares the vocabulary; consumers adopt it batch by
+ * batch, ui-primitives first.
+ *
+ * The eleven spacer rungs and the four type rungs are 1:1 with Trae's; no
+ * rung is invented, and none is omitted except `spacer-0` (a no-op). Where a
+ * component's real value sits off the ladder (3px, 5px, 7px, 10px, 14px,
+ * 22px, 36px) it keeps its literal — this is a vocabulary, not a clamp.
+ *
+ * Type rungs are named for the ladder, NOT for DSH's own base: DSH's markdown
+ * and conversation body are authored at 14px, which is off this ladder. That
+ * 14 -> 13 shift is a readability decision rather than a token one and moves
+ * with the content-size baseline, not here.
+ * ------------------------------------------------------------------------- */
+:root {
+  --dsw-space-0: 0px;
+  --dsw-space-2: 2px;
+  --dsw-space-4: 4px;
+  --dsw-space-6: 6px;
+  --dsw-space-8: 8px;
+  --dsw-space-12: 12px;
+  --dsw-space-16: 16px;
+  --dsw-space-20: 20px;
+  --dsw-space-24: 24px;
+  --dsw-space-28: 28px;
+  --dsw-space-32: 32px;
+  --dsw-space-40: 40px;
+
+  --dsw-font-size-xs: 10px;
+  --dsw-font-size-sm: 11px;
+  --dsw-font-size-md: 12px;
+  --dsw-font-size-base: 13px;
+  --dsw-line-height-xs: 14px;
+  --dsw-line-height-sm: 16px;
+  --dsw-line-height-md: 18px;
+  --dsw-line-height-base: 20px;
+}

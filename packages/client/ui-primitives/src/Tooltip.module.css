@@ -1,7 +1,7 @@
 .bubble {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--dsw-space-8);
   position: fixed;
   z-index: 100;
   /* Fixed-position shrink-to-fit measures only the space from `left` to the
@@ -13,8 +13,8 @@
   border-radius: var(--dsw-radius-sm);
   background: var(--dsw-alias-tooltip-bg);
   color: var(--dsw-static-neutral-bluish-00);
-  font-size: 13px;
-  line-height: 20px;
+  font-size: var(--dsw-font-size-base);
+  line-height: var(--dsw-line-height-base);
   white-space: pre-line;
   /* Unbreakable tokens (URLs, paths) must not push past max-width. */
   overflow-wrap: break-word;

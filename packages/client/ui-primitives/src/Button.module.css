@@ -1,15 +1,18 @@
-/* Button sizes share the global control-radius scale. */
+/* Button sizes share the global control-radius and type ladders. The md label
+   rides the ladder base (13/20), which is Trae's own control text size; the
+   36px md height stays a literal because Trae's controls run 25-32px and
+   shrinking height is an ergonomics call, not a token one. */
 .button {
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: var(--dsw-space-4);
   border: none;
   border-radius: var(--dsw-radius-md);
   cursor: pointer;
-  font-size: 14px;
-  line-height: 22px;
+  font-size: var(--dsw-font-size-base);
+  line-height: var(--dsw-line-height-base);
   color: var(--dsw-alias-label-primary);
   background: transparent;
   padding: 0 14px;
@@ -24,11 +27,13 @@
   height: 36px;
 }
 
-/* Compact controls retain their dimensions across filled and outlined variants. */
+/* Compact controls retain their dimensions across filled and outlined variants.
+   The height rung uses the spacer ladder because Trae's own control heights do
+   (`height: var(--spacer-32)` on its tooltip action). */
 .sm {
-  height: 28px;
-  font-size: 12px;
-  line-height: 18px;
+  height: var(--dsw-space-28);
+  font-size: var(--dsw-font-size-md);
+  line-height: var(--dsw-line-height-md);
   padding: 0 10px;
   border-radius: var(--dsw-radius-sm);
 }
