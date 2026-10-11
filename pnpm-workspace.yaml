@@ -35,6 +35,14 @@ overrides:
   # a package.json plus a vendor/README.md manifest row for each, so a bare
   # tarball directory there fails the pre-commit notices job.
   xlsx: 'file:third-party/tarballs/xlsx-0.20.3.tgz'
+  # ui-primitives declares micromark-util-types ^2.0.2 while the mdast and
+  # micromark-extension packages declare ^2.0.0/^2.0.1. A re-resolve pinned the
+  # first to 2.0.3 and left the rest on 2.0.2, so in
+  # packages/client/ui-primitives/src/markdown/parse.ts the Extension type from
+  # one met the other and the client typecheck failed with TS2769 twice. Both
+  # specifier ranges admit a single version, so one entry for the whole graph
+  # removes the duplicate rather than teaching the call site about it.
+  micromark-util-types: '2.0.3'
 
 peerDependencyRules:
   allowedVersions:
