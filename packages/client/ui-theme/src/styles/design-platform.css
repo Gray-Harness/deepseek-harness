@@ -510,3 +510,43 @@ html body[data-ds-dark-theme] {
   --dsw-menu-surface-fill: rgba(32, 33, 35, 0.45);
   --dsw-alias-menu-group-header-fill: rgba(32, 33, 35, 0.94);
 }
+
+/* ---------------------------------------------------------------------------
+ * Workbench fork (Gray-Harness): Trae Solo shape scale.
+ *
+ * SAMPLED, not invented. Source: the installed Trae CN resources, file
+ * `resources/app/node_modules/@byted-icube/solo-lite/dist/3577.b1dbfb5a.css`.
+ * Every one of Trae's control radii falls back to the same literal:
+ *   --radius-6: 6px                 controls: --solo-button-border-radius,
+ *                                   --solo-tooltip-border-radius, .solo-icon-btn,
+ *                                   .solo-lite-marketplace-back-button
+ *   --radius-radius-sm-8: 8px       --solo-input-pill-border-radius and the
+ *                                   composer send button (.chat-input-v2-send-button)
+ *   --solo-panel-border-radius: 16px panels (marketplace canvas / tab bar)
+ *   --transition-fast: .15s ease     hover transitions on those controls
+ * Trae's shape language is therefore 6 (controls) / 8 (inputs, pills) / 16 (panels).
+ *
+ * MAPPED onto DSH's own rung names: sm 8 -> 6 (compact controls, menu rows,
+ * tooltips), md 12 -> 8 (buttons, inputs, config fields), panel 28 -> 16 and
+ * xl 20 -> 16 (modals, the input bar, cards and message images collapse onto
+ * Trae's panel rung — the two 16s are derived, not sampled). lg is already 16,
+ * exactly Trae's panel radius, and is left untouched; xs stays 4, which is also
+ * Trae's own scrollbar-thumb radius. Every rung keeps its base.css name, so the
+ * radius-scale test still sees a complete token set and no component CSS moves.
+ *
+ * THEME-INDEPENDENT, unlike the palette block above: shape is not a colour, so
+ * this applies to both themes. Declared on :root with the same specificity as
+ * base.css's rung table, in a sheet that loads after it, so it wins by source
+ * order — one value per token, no second table to drift.
+ *
+ * Motion is NOT touched here: Trae's .15s ease is real, but DSH's primitives
+ * declare no hover transitions at all, so writing that duration to the unused
+ * --ds-transition-duration-fast would change nothing. It lands with the
+ * control-layer pass instead.
+ * ------------------------------------------------------------------------- */
+:root {
+  --dsw-radius-sm: 6px;
+  --dsw-radius-md: 8px;
+  --dsw-radius-xl: 16px;
+  --dsw-radius-panel: 16px;
+}

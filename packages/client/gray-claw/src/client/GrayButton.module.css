@@ -12,7 +12,7 @@
   padding: 6px 10px;
   box-sizing: border-box;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--dsw-radius-md);
   background: transparent;
   cursor: pointer;
   overflow: hidden;
@@ -35,6 +35,9 @@
   gap: 0;
   padding: 0;
   border-radius: 50%;
+  /* The universal superellipse (corner-shape.css) would square off this circle
+     without the explicit arc back. */
+  corner-shape: round;
 }
 
 .mark {
@@ -44,7 +47,7 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  border-radius: 6px;
+  border-radius: var(--dsw-radius-sm);
   background: var(--dsw-alias-interactive-bg-hover);
   font-size: 12px;
   font-weight: 600;
