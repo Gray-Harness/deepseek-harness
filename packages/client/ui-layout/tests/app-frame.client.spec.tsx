@@ -269,6 +269,16 @@ describe('AppFrame', () => {
     expect(queryByTestId('shell.leading-content')).toBeNull()
   })
 
+  it('renders the shell.status seat beneath the columns and reserves it unconditionally', () => {
+    const { frame, getByTestId, slotCalls } = mountFrame()
+    const seat = frame.querySelector('[data-shell-status]')
+    expect(seat).not.toBeNull()
+    expect(seat!.contains(getByTestId('shell.status-content'))).toBe(true)
+    // Declared and rendered even with no occupant: the frame reserves the row.
+    expect(slotCalls.filter(call => call.key === 'shell.status'))
+      .toEqual([{ key: 'shell.status', props: {}, options: undefined }])
+  })
+
   it('switches only the keyed main outlet when the active panel changes', () => {
     selectedSessionTitle = 'Session title'
     const { instance, frame, slotCalls, getByTestId } = mountFrame()

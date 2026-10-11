@@ -110,6 +110,18 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * the lights or the controls.
      */
     'shell.leading': { kind: 'single'; scope: 'root' }
+    /**
+     * Frame-wide bottom seat: a full-width row beneath every column, inside the
+     * frame and outside each column's scroll container. A status strip
+     * (connection, active model, branch) belongs here — register into this seat
+     * instead of padding `#root`, which fights the column scroll containers and
+     * leaves the drag handles spanning the strip.
+     *
+     * The row is auto-sized: with no occupant it contributes zero height and
+     * the frame is exactly the three-column frame. The seat is not free-floating
+     * — the frame reserves a real grid row for it, so the columns end above it.
+     */
+    'shell.status': { kind: 'single'; scope: 'root' }
   }
 }
 
@@ -177,6 +189,7 @@ export function apply(ctx: ClientContext): void {
         'rightbar': { kind: 'single', scope: 'root' },
         'shell.overlay': { kind: 'list', scope: 'root' },
         'shell.leading': { kind: 'single', scope: 'root' },
+        'shell.status': { kind: 'single', scope: 'root' },
       },
       store,
     }, AppFrame)

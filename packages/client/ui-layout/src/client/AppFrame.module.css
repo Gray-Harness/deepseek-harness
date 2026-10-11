@@ -1,7 +1,10 @@
 .frame {
   position: relative; /* anchors the drag handles, which straddle column borders */
   display: grid;
-  grid-template-rows: 100%;
+  /* Row 1 is the three columns; row 2 is the shell.status seat. The seat row is
+     auto-sized, so with no occupant it is zero height and this is exactly the
+     three-column frame. */
+  grid-template-rows: minmax(0, 1fr) auto;
   height: 100%;
   overflow: hidden;
   background: var(--dsw-alias-bg-base);
@@ -27,7 +30,7 @@
   --dsh-windows-content-radius: 16px;
   box-sizing: border-box;
   padding-top: var(--dsh-windows-titlebar-height);
-  grid-template-rows: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
   background: var(--dsw-specific-sidebar-fill);
 }
 
@@ -229,6 +232,12 @@
   position: absolute;
   top: 0;
   bottom: 0;
+  /* Pin the containing block to row 1 (the columns). .handle is an
+     absolutely-positioned grid child with a definite grid position, so its
+     containing block is that grid area: with a shell.status row below, a
+     full-height handle would otherwise straddle the strip. */
+  grid-row: 1;
+  grid-column: 1 / -1;
   width: 8px;
   margin-left: -4px;
   cursor: col-resize;
@@ -283,4 +292,14 @@
 
 .overlayLayer > * {
   pointer-events: auto;
+}
+
+/* Frame-wide bottom seat: row 2 of the frame grid, spanning every column, so it
+   sits inside the frame and outside the columns' scroll containers. The frame
+   grid auto-sizes the row, so an unoccupied seat is zero height. The occupant
+   owns its height, background and separator — the seat only reserves the row. */
+.statusSeat {
+  grid-column: 1 / -1;
+  min-width: 0;
+  overflow: hidden;
 }

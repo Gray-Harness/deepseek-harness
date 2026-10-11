@@ -27,7 +27,7 @@ import css from './AppFrame.module.css'
 /** Full composed props: runtime share + child-slot render share + store share. */
 export type AppFrameProps =
   & PropsRuntime<'root'>
-  & PropsRenderSlots<'sidebar' | 'main' | 'rightbar' | 'shell.overlay' | 'shell.leading'>
+  & PropsRenderSlots<'sidebar' | 'main' | 'rightbar' | 'shell.overlay' | 'shell.leading' | 'shell.status'>
   & PropsStore<ReturnType<typeof createLayoutStore>>
   & PropsLocale<'common'>
 
@@ -247,6 +247,10 @@ export function AppFrame({
     <MainPanel usePanelInfo={usePanelInfo} renderSlot={renderSlot} />
   ), [usePanelInfo, renderSlot])
   const overlays = useMemo(() => renderSlot('shell.overlay', {}), [renderSlot])
+  // Frame-wide bottom strip: a real second grid row, so the columns (and the
+  // drag handles, which are pinned to row 1) end above it. Auto-sized, so an
+  // empty seat contributes no height.
+  const status = useMemo(() => renderSlot('shell.status', {}), [renderSlot])
   // Window-chrome seat over the main panels' top-left corner: only a fully
   // hidden sidebar column on macOS desktop leaves window chrome without a
   // home — the Windows zero-width collapse keeps its controls in the caption
@@ -288,6 +292,9 @@ export function AppFrame({
       </>
       <div className={css.overlayLayer} data-shell-overlay>
         {overlays}
+      </div>
+      <div className={css.statusSeat} data-shell-status>
+        {status}
       </div>
       {leadingMounted && (
         <div className={css.leadingSeat} data-shell-leading>
