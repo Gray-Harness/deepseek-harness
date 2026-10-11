@@ -95,9 +95,10 @@
   color: var(--dsw-alias-label-secondary);
 }
 
-/* Compact one-line Workspace row after removing the session-count subtitle. */
+/* One-line Workspace row, on the shared 36px row rhythm the sidebar nav and
+   the session rows use (reference sidebar: every list row is the same box). */
 .projectRow {
-  height: 34px;
+  height: 36px;
   align-items: center;
   box-sizing: border-box;
 }
@@ -106,9 +107,10 @@
   height: 20px;
 }
 
-/* Session cell (figma): pad 8, a 16px status slot, then a 4px title gap. */
+/* Session cell: pad 8, a 16px status slot, then a 4px title gap, on the
+   shared 36px row rhythm. */
 .sessionRow {
-  height: 32px;
+  height: 36px;
   gap: 0;
 }
 

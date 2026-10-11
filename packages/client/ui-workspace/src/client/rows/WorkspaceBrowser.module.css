@@ -42,6 +42,14 @@
   background: var(--dsw-alias-interactive-bg-hover);
 }
 
+/* The list header's view button holds its fill while its popover is open
+   (reference sidebar: the trigger stays latched as the active control). */
+.iconButtonActive,
+.iconButtonActive:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
+}
+
 /* View-options dropdown card: labels are short, so a content-sized card reads
    cramped and its width shifts with the locale — hold a stable floor. */
 .viewOptionsMenu {

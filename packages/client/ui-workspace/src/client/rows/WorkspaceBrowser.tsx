@@ -155,8 +155,9 @@ function ViewOptionsMenu({ groupBy, orderBy, archivedFilter, onGroupPick, onOrde
         <Tooltip label={t('viewOptions.label')} side="bottom" delayMs={500}>
           <button
             type="button"
-            className={clsx(css.iconButton, css.wide)}
+            className={clsx(css.iconButton, css.wide, open && css.iconButtonActive)}
             aria-label={t('viewOptions.label')}
+            aria-expanded={open}
             onClick={() => { setOpen(v => !v) }}
           >
             <IconSlidersTwoOutlineRegular />

@@ -265,8 +265,10 @@ export function SidebarRoot({
           onClick={() => { startSession() }}
         >
           <span className={css.newSessionLabelMask}><span className={css.newSessionContent}>
+            {/* Wide renders at the panel rows' 16px glyph edge so New Session
+                and the global panel entries read as one nav list. */}
             {wide
-              ? <IconNewChatOutlineMedium size={14} />
+              ? <IconNewChatOutlineMedium size={16} />
               : <IconNewChatOutlineRegular size={windowsTitlebar ? 16 : 18} />}
             {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{t('session.new')}</span>}
           </span></span>
