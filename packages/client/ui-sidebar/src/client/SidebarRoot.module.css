@@ -434,8 +434,15 @@
   padding: 0;
   margin: 0 0 12px;
   gap: 0;
+  /* The wide row is left-aligned; the rail's single glyph is centered in the
+     same 36px box, like every other rail control. */
+  justify-content: center;
   border-color: transparent;
   background: transparent;
+}
+
+.collapsed .newSessionContent {
+  justify-content: center;
 }
 
 .collapsed .newSession:hover {
