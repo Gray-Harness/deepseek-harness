@@ -418,6 +418,14 @@ html[data-platform='darwin'] body[data-ds-dark-theme] {
  * Rungs Trae does not name are marked "derived" and continue Trae's own
  * per-channel step (+8/+9/+10 per rung).
  *
+ * WHAT IS AND IS NOT TAKEN: numeric colour values only. No Trae code, CSS,
+ * class name, font, image or other asset is copied, and every declaration
+ * below is expressed against DSH's own token names and authored here. Colour
+ * values are facts, not protectable expression, so this block carries no Trae
+ * licence obligation — the attribution above is kept for reviewability, not
+ * because it is required. (Trae's UI font stack is likewise *not* vendored
+ * anywhere in this repository.)
+ *
  * WHY A RE-DECLARATION rather than editing the tables above: the dark static
  * ramp above is byte-identical to the light one, so an in-place edit is both
  * unreviewable and a permanent merge hazard against upstream. Keeping the
