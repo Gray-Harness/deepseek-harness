@@ -8,8 +8,12 @@
 import type { IndexInjection } from '@deepseek-ai/dsh-host-webserver'
 import { DEFAULT_FONT_SIZE, DEFAULT_PREFERENCE, type ThemePreference } from './theme-settings.ts'
 
+/* Workbench fork: these two canvases paint the document before the ui-theme
+ * bundle loads, so each must match design-platform.css's `--dsw-alias-bg-base`
+ * or the first frame flashes the wrong colour. Dark tracks the fork's Trae Solo
+ * "ICube Dark" palette (Trae colorBg1). */
 const LIGHT_BACKGROUND = '#fff'
-const DARK_BACKGROUND = '#151517'
+const DARK_BACKGROUND = '#1a1b1d'
 
 /** CSS that colors the document canvas before any script executes. */
 function bootThemeStyle(preference: ThemePreference): string {

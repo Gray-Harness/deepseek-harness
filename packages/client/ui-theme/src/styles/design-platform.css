@@ -404,5 +404,101 @@ html[data-platform='darwin'] body {
 }
 
 html[data-platform='darwin'] body[data-ds-dark-theme] {
-  --dsw-specific-menu: rgba(48, 49, 54, 0.94);
+  --dsw-specific-menu: rgba(32, 33, 35, 0.94);
+}
+
+/* ---------------------------------------------------------------------------
+ * Workbench fork (Gray-Harness): Trae Solo "ICube Dark" palette.
+ *
+ * SAMPLED, not invented. Source: the installed Trae CN resources, file
+ * `resources/app/extensions/theme-icube/themes/dark_color.json` (theme "ICube
+ * Dark"), cross-checked against the solo-lite component sheet
+ * (`node_modules/@byted-icube/solo-lite/dist/index.css`). Trae's own token
+ * names are kept in the comments so every value stays traceable to a sample.
+ * Rungs Trae does not name are marked "derived" and continue Trae's own
+ * per-channel step (+8/+9/+10 per rung).
+ *
+ * WHY A RE-DECLARATION rather than editing the tables above: the dark static
+ * ramp above is byte-identical to the light one, so an in-place edit is both
+ * unreviewable and a permanent merge hazard against upstream. Keeping the
+ * divergence in one contiguous block means upstream palette changes keep
+ * merging cleanly and this fork's styling stays trivially revertible.
+ * Specificity is (0,1,2) so the block wins over `body[data-ds-dark-theme]`
+ * regardless of how the official blocks are ordered in later revisions; the
+ * darwin block above stays higher at (0,2,2) and keeps owning `--dsw-specific-menu`.
+ *
+ * DARK ONLY. Light mode deliberately keeps upstream's palette: there is no
+ * sampled basis for a light redesign in this change, and inventing one is
+ * exactly the failure this fork has already been burned by.
+ * ------------------------------------------------------------------------- */
+html body[data-ds-dark-theme] {
+  /* Surfaces: Trae colorBg1 -> colorBg3, plus the solo-lite column (bg-bg-menu). */
+  --dsw-static-neutral-bluish-950: rgb(26, 27, 29);    /* colorBg1    #1A1B1D */
+  --dsw-static-neutral-bluish-900: rgb(32, 33, 35);    /* bg-bg-menu  #202123 */
+  --dsw-static-neutral-bluish-875: rgb(34, 36, 39);    /* colorBg2    #222427 */
+  --dsw-static-neutral-bluish-850: rgb(42, 45, 49);    /* colorBg3    #2A2D31 */
+  --dsw-static-neutral-bluish-800: rgb(50, 54, 59);    /* derived */
+  --dsw-static-neutral-bluish-750: rgb(67, 70, 82);    /* blendColor.btnTransparent3.bg2 #434652 */
+  --dsw-static-neutral-bluish-700: rgb(74, 81, 89);    /* derived */
+  --dsw-static-neutral-800: rgb(34, 36, 39);           /* markdown inline code - colorBg2 */
+  --dsw-static-neutral-850: rgb(42, 45, 49);           /* multi-select - colorBg3 */
+
+  /* Text: Trae colorHighlightText -> colorDisableText, brightest first. */
+  --dsw-static-neutral-bluish-50: rgb(245, 249, 254);   /* colorHighlightText #F5F9FE */
+  --dsw-static-neutral-bluish-100: rgb(209, 211, 219);  /* colorDefaultText   #D1D3DB */
+  --dsw-static-neutral-bluish-300: rgb(149, 153, 166);  /* colorGrayText      #9599A6 */
+  --dsw-static-neutral-bluish-400: rgb(115, 119, 128);  /* colorGrayText2     #737780 */
+  --dsw-static-neutral-bluish-600: rgb(102, 107, 117);  /* colorDisableText   #666B75 */
+  --dsw-static-neutral-bluish-1000: rgb(12, 12, 13);    /* text-onbrand       #0C0C0D */
+
+  /* Accent: Trae's brand is a mint green; its blue is the status ladder. */
+  --dsw-static-deepseek-450: rgb(50, 240, 140);         /* bg-bg-brand        #32F08C */
+  --dsw-static-deepseek-400: rgb(56, 123, 255);         /* colorStatusRegular #387BFF */
+  --dsw-static-deepseek-500: rgb(76, 136, 255);         /* colorStatusRegularHover #4C88FF */
+
+  /* Separators: Trae colorLine1/2/3 all sit on #E0E2F2. */
+  --dsw-alias-border-l1: rgba(224, 226, 242, 0.09);
+  --dsw-alias-border-l2-darkmode-thin: rgba(224, 226, 242, 0.09);
+  --dsw-alias-border-l2: rgba(224, 226, 242, 0.13);
+  --dsw-alias-border-l3: rgba(224, 226, 242, 0.18);
+  --dsw-alias-border-l4: rgba(224, 226, 242, 0.26);     /* derived */
+  --dsw-alias-border-inverted: rgba(224, 226, 242, 0.06);
+  --dsw-alias-border-inverted2: rgba(224, 226, 242, 0.09);
+
+  /* Interaction fills: Trae colorBtnHover .05, colorBtnHover2 .08, transparent3 .12. */
+  --dsw-alias-interactive-bg-hover: rgba(224, 226, 242, 0.05);
+  --dsw-alias-interactive-bg-active: rgba(224, 226, 242, 0.08);
+  --dsw-alias-interactive-bg-hover-accent: rgba(224, 226, 242, 0.12);
+  --dsw-alias-interactive-bg-hover-solid: rgb(42, 45, 49);
+  --dsw-alias-interactive-bg-hover-danger: rgba(208, 42, 35, 0.18); /* colorErrorTransparent */
+  --dsw-alias-bg-skeleton: rgba(224, 226, 242, 0.08);
+
+  /* Brand: Trae paints the primary action mint, with near-black text on it. */
+  --dsw-alias-brand-primary: rgb(50, 240, 140);         /* bg-bg-brand */
+  --dsw-alias-brand-primary-invert: rgb(12, 12, 13);    /* text-onbrand */
+  --dsw-alias-brand-text: rgb(12, 12, 13);              /* text-onbrand */
+  --dsw-alias-label-primary-foreground: rgb(12, 12, 13);
+  --dsw-alias-button-primary-hover: rgb(15, 220, 120);  /* bg-bg-brand-hover #0FDC78 */
+  --dsw-alias-button-primary-dimmed: rgba(50, 240, 140, 0.2); /* bg-bg-brand-disabled */
+
+  /* Upstream paints the composer's send action with the *info* fill rather than
+   * brand-primary (ui-conversation InputBar), and uses state-business-primary
+   * as the focus/business accent. In DSH both are the brand blue, so a brand
+   * port has to move them; in Trae that action and that accent are the brand
+   * mint (bg-bg-brand / border-border-brand). Links keep the blue, as in Trae. */
+  --dsw-alias-button-info-fill: rgb(50, 240, 140);      /* bg-bg-brand */
+  --dsw-alias-button-info-hover: rgb(15, 220, 120);     /* bg-bg-brand-hover */
+  --dsw-alias-state-business-primary: rgb(50, 240, 140);/* border-border-brand */
+
+  /* Scrollbars: Trae scrollbarBgColor #DDE2E940, hover #DDE2E959. */
+  --dsw-alias-scrollbar-bg-l1: rgba(221, 226, 233, 0.25);
+  --dsw-alias-scrollbar-bg-l2: rgba(221, 226, 233, 0.25);
+  --dsw-alias-scrollbar-hover-l1: rgba(221, 226, 233, 0.35);
+  --dsw-alias-scrollbar-hover-l2: rgba(221, 226, 233, 0.35);
+
+  --dsw-alias-switch-thumb: rgb(209, 211, 219);         /* colorDefaultText */
+
+  /* Menu surfaces: Trae bg-bg-menu #202123. */
+  --dsw-menu-surface-fill: rgba(32, 33, 35, 0.45);
+  --dsw-alias-menu-group-header-fill: rgba(32, 33, 35, 0.94);
 }
