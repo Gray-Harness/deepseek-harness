@@ -68,7 +68,7 @@ describe('elevation tokens', () => {
     expect(value('body[data-ds-dark-theme]')).toBe('rgba(67, 69, 74, 0.45)')
     expect(value('body', '--dsw-specific-menu')).toBe('var(--dsw-menu-surface-fill)')
     expect(value("html[data-platform='darwin'] body", '--dsw-specific-menu')).toBe('rgba(248, 249, 250, 0.94)')
-    expect(value("html[data-platform='darwin'] body[data-ds-dark-theme]", '--dsw-specific-menu')).toBe('rgba(48, 49, 54, 0.94)')
+    expect(value("html[data-platform='darwin'] body[data-ds-dark-theme]", '--dsw-specific-menu')).toBe('rgba(32, 33, 35, 0.94)')
   })
 })
 
