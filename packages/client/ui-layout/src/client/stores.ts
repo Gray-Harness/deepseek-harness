@@ -6,8 +6,39 @@ import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-sto
 import type { MainPanelId } from './service.ts'
 import {
   clampWidth, RIGHTBAR_DEFAULT_RATIO, RIGHTBAR_MAX_RATIO, RIGHTBAR_MIN,
-  SIDEBAR_AUTO_COLLAPSE, SIDEBAR_DEFAULT, SIDEBAR_MAX, SIDEBAR_MIN,
+  SIDEBAR_AUTO_COLLAPSE, SIDEBAR_AUTO_EXPAND, SIDEBAR_DEFAULT, SIDEBAR_MAX, SIDEBAR_MIN,
 } from './columns.ts'
+
+/** localStorage key for the narrow sidebar's manual expansion override. */
+const NARROW_EXPANDED_KEY = 'dsh.sidebar.narrowExpanded'
+
+/** Read the persisted narrow-expansion override; a non-browser run or a refused
+ * read is the collapsed default (the same fail-closed the sidebar uses). */
+function readNarrowExpanded(): boolean {
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem(NARROW_EXPANDED_KEY) === '1'
+  } catch (_storageUnavailable) {
+    return false
+  }
+}
+
+/** Persist the narrow-expansion override; a refused write never breaks the store. */
+function writeNarrowExpanded(value: boolean): void {
+  try {
+    if (typeof localStorage === 'undefined') return
+    if (value) localStorage.setItem(NARROW_EXPANDED_KEY, '1')
+    else localStorage.removeItem(NARROW_EXPANDED_KEY)
+  } catch (_storageUnavailable) {
+    /* storage unavailable — the override is simply not remembered */
+  }
+}
+
+/** Which responsive regime a frame width falls in, for the collapse hysteresis. */
+function responsiveRegime(width: number): 'narrow' | 'band' | 'wide' {
+  if (width < SIDEBAR_AUTO_COLLAPSE) return 'narrow'
+  if (width > SIDEBAR_AUTO_EXPAND) return 'wide'
+  return 'band'
+}
 
 /**
  * Transient layout preferences. Responsive concessions never rewrite widths;
@@ -82,7 +113,7 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
       layoutInfo: {
         sidebar: SIDEBAR_DEFAULT,
         viewportWidth: window.innerWidth,
-        narrowExpanded: false,
+        narrowExpanded: readNarrowExpanded(),
         rightbar: null,
         rightbarShown: false,
         rightbarTrack: false,
@@ -107,16 +138,25 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
       // untouched, so re-widening restores the pre-squeeze layout.
       toggleSidebar: (d) => {
         d.layoutInfo.rightbarInstant = false
-        if (d.layoutInfo.viewportWidth < SIDEBAR_AUTO_COLLAPSE) d.layoutInfo.narrowExpanded = !d.layoutInfo.narrowExpanded
-        else d.layoutInfo.sidebar = d.layoutInfo.sidebar === 0 ? SIDEBAR_DEFAULT : 0
+        if (d.layoutInfo.viewportWidth < SIDEBAR_AUTO_COLLAPSE) {
+          d.layoutInfo.narrowExpanded = !d.layoutInfo.narrowExpanded
+          writeNarrowExpanded(d.layoutInfo.narrowExpanded)
+        } else {
+          d.layoutInfo.sidebar = d.layoutInfo.sidebar === 0 ? SIDEBAR_DEFAULT : 0
+        }
       },
-      // Crossing the breakpoint in either direction drops the override: the
-      // narrow default is auto-collapsed, the wide state is the preference.
+      // Entering the narrow or wide regime drops the manual override, but
+      // drifting inside the 1024–1100 dead band does not: that is the
+      // hysteresis that stops a window dragged near the boundary from
+      // fluttering between collapse and expand.
       setViewportWidth: (d, width: number) => {
         if (d.layoutInfo.viewportWidth === width) return
         d.layoutInfo.rightbarInstant = false
-        if ((d.layoutInfo.viewportWidth < SIDEBAR_AUTO_COLLAPSE) !== (width < SIDEBAR_AUTO_COLLAPSE)) {
+        const from = responsiveRegime(d.layoutInfo.viewportWidth)
+        const to = responsiveRegime(width)
+        if (from !== to && to !== 'band') {
           d.layoutInfo.narrowExpanded = false
+          writeNarrowExpanded(false)
         }
         d.layoutInfo.viewportWidth = width
       },

@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createLayoutStore } from '../src/client/stores.ts'
 import type { MainPanelId } from '../src/client/service.ts'
 
-beforeEach(() => { vi.stubGlobal('innerWidth', 1920) })
+beforeEach(() => { vi.stubGlobal('innerWidth', 1920); localStorage.clear() })
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks() })
 
 describe('createLayoutStore', () => {
@@ -63,17 +63,44 @@ describe('createLayoutStore', () => {
     expect(store.getSnapshot().layoutInfo).toMatchObject({ sidebar: 400, narrowExpanded: false })
   })
 
-  it('clears the manual override only when crossing 1024px', () => {
+  it('keeps the override inside the dead band and drops it entering narrow or wide', () => {
     const { store, actions } = createLayoutStore().create()
     actions.setViewportWidth(980)
     actions.toggleSidebar()
-    actions.setViewportWidth(980)
-    actions.setViewportWidth(1023)
     expect(store.getSnapshot().layoutInfo.narrowExpanded).toBe(true)
+    // Drifting inside the 1024–1100 band keeps the override.
     actions.setViewportWidth(1024)
+    expect(store.getSnapshot().layoutInfo.narrowExpanded).toBe(true)
+    actions.setViewportWidth(1100)
+    expect(store.getSnapshot().layoutInfo.narrowExpanded).toBe(true)
+    // Entering the wide regime drops it.
+    actions.setViewportWidth(1101)
     expect(store.getSnapshot().layoutInfo.narrowExpanded).toBe(false)
+    // Re-entering the narrow regime keeps the collapsed default.
     actions.setViewportWidth(980)
     expect(store.getSnapshot().layoutInfo.narrowExpanded).toBe(false)
+  })
+
+  it('persists the narrow override and restores it on boot', () => {
+    localStorage.setItem('dsh.sidebar.narrowExpanded', '1')
+    const { store, actions } = createLayoutStore().create()
+    expect(store.getSnapshot().layoutInfo.narrowExpanded).toBe(true)
+
+    // Entering the narrow regime resets the override and clears the key.
+    actions.setViewportWidth(980)
+    expect(store.getSnapshot().layoutInfo.narrowExpanded).toBe(false)
+    expect(localStorage.getItem('dsh.sidebar.narrowExpanded')).toBeNull()
+
+    // Toggling in the narrow regime writes the override back and clears it off.
+    actions.toggleSidebar()
+    expect(localStorage.getItem('dsh.sidebar.narrowExpanded')).toBe('1')
+    actions.toggleSidebar()
+    expect(localStorage.getItem('dsh.sidebar.narrowExpanded')).toBeNull()
+
+    // Entering the wide regime also clears a persisted override.
+    actions.toggleSidebar()
+    actions.setViewportWidth(1101)
+    expect(localStorage.getItem('dsh.sidebar.narrowExpanded')).toBeNull()
   })
 })
 

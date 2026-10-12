@@ -21,6 +21,10 @@ export const SIDEBAR_COLLAPSED = 56
  * LG breakpoint); a manual toggle below it re-expands over the squeezed center
  * (stores.ts narrowExpanded). */
 export const SIDEBAR_AUTO_COLLAPSE = 1024
+/** Viewport width above which the sidebar auto-expands back to its preference.
+ * The 1024–1100 band between the two thresholds is a dead zone, so a window
+ * dragged near the boundary does not flutter between collapse and expand. */
+export const SIDEBAR_AUTO_EXPAND = 1100
 /** Right column drag clamp floor. */
 export const RIGHTBAR_MIN = 300
 /** Maximum normal right panel width as a fraction of the frame. */
