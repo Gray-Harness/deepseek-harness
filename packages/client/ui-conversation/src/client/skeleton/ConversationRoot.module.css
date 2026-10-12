@@ -14,7 +14,10 @@
    inset — so no row below may grow past its figure. */
 .header {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  /* The leading column must be allowed to shrink below its content width, or a
+     wide leading occupant keeps the title column (minmax(0,1fr)) starved and
+     the header overflows: `auto` alone has an implicit min-content floor. */
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   flex: none;
   box-sizing: border-box;
   min-height: 76px;
