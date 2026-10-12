@@ -19,7 +19,7 @@
 import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import {
-  FishLogo, IconNewChatOutlineMedium, IconNewChatOutlineRegular, IconPanelLeftOutlineRegular, isDarwinDesktop, ShortcutKeys, Tooltip,
+  FishLogo, IconPanelLeftOutlineRegular, isDarwinDesktop, Tooltip,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { InjectFace, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
@@ -279,29 +279,6 @@ export function SidebarRoot({
         })()}
         {!darwinDesktop && toggle}
       </div>
-
-      {/* The label fades before the hover/focus shortcut, including on translucent backgrounds. */}
-      <Tooltip label={t('session.new.label')} shortcutKeys={newShortcut?.keys} delayMs={500} side={captionTooltipSide} disabled={wide}>
-        <button
-          type="button"
-          className={css.newSession}
-          aria-label={t('session.new.label')}
-          aria-keyshortcuts={newShortcut?.aria}
-          onClick={() => { startSession() }}
-        >
-          <span className={css.newSessionLabelMask}><span className={css.newSessionContent}>
-            {/* Wide renders at the panel rows' 16px glyph edge so New Session
-                and the global panel entries read as one nav list. */}
-            {wide
-              ? <IconNewChatOutlineMedium size={16} />
-              : <IconNewChatOutlineRegular size={windowsTitlebar ? 16 : 18} />}
-            {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{t('session.new')}</span>}
-          </span></span>
-          {wide && newShortcut !== undefined && newShortcut.keys.length > 0 && <span className={css.newSessionShortcut} aria-hidden="true">
-            <ShortcutKeys keys={newShortcut.keys} />
-          </span>}
-        </button>
-      </Tooltip>
 
       {panels.length > 0 && (
         <nav className={css.panelList} aria-label={t('panels.label')}>

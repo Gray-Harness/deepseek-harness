@@ -106,14 +106,8 @@ describe('SidebarRoot shell', () => {
     const shortcut: ShortcutCatalogEntry = { id: 'session.new' as ShortcutCommandId, label: 'New', aliases: [],
       binding: null, modified: true, conflicts: [], issue: null, keys: ['Ctrl', 'N'], aria: 'Control+N' }
     mountShell({ shortcuts: [shortcut] })
-    for (const button of screen.getAllByRole('button', { name: 'New session' })) {
-      expect(button.getAttribute('aria-keyshortcuts')).toBe('Control+N')
-    }
-    const expanded = screen.getAllByRole('button', { name: 'New session' }).find(button => button.querySelector('kbd') !== null)!
-    fireEvent.mouseEnter(expanded)
-    fireEvent.focus(expanded)
-    expect(screen.queryByRole('tooltip')).toBeNull()
-    expect(Array.from(expanded.querySelectorAll('kbd'), key => key.textContent)).toEqual(['Ctrl', 'N'])
+    // The wordmark (brand) is the shell's new-session entry now.
+    expect(screen.getByRole('button', { name: 'New session' }).getAttribute('aria-keyshortcuts')).toBe('Control+N')
     cleanup()
     render(<HeaderLeadingControls toggleSidebar={vi.fn()} startSession={vi.fn()} selectPanel={vi.fn()} t={t}
       usePanelInfo={neverHook} useSessions={neverHook} useSessionStatus={neverHook}
@@ -124,15 +118,15 @@ describe('SidebarRoot shell', () => {
     fireEvent.focus(button)
     expect(Array.from(screen.getByRole('tooltip').querySelectorAll('kbd'), key => key.textContent)).toEqual(['Ctrl', 'N'])
   })
-  it('routes New Session (capsule + wordmark) and the column toggle', () => {
+  it('routes New Session (wordmark) and the column toggle', () => {
     const b = mountShell()
     expect(screen.getByTestId('custom-brand-mark')).toBeTruthy()
     expect(screen.getByTestId('custom-brand-name')).toBeTruthy()
-    // Expanded, both the wordmark and the capsule start a session.
+    // Expanded, the wordmark alone starts a session.
     const starters = screen.getAllByRole('button', { name: 'New session' })
-    expect(starters).toHaveLength(2)
+    expect(starters).toHaveLength(1)
     for (const button of starters) fireEvent.click(button)
-    expect(b.startSession).toHaveBeenCalledTimes(2)
+    expect(b.startSession).toHaveBeenCalledTimes(1)
     fireEvent.click(screen.getByRole('button', { name: 'Collapse sidebar' }))
     expect(b.toggleSidebar).toHaveBeenCalledOnce()
   })
@@ -259,9 +253,9 @@ it('keeps the macOS sidebar toggle in its top strip', () => {
   fireEvent.click(screen.getByRole('button', { name: en['toggle.collapse'] }))
   expect(shell.toggleSidebar).toHaveBeenCalledOnce()
   // The brand stays part of the logo row's window-drag surface: no button
-  // role (the global no-drag rule would subtract it); only the dedicated
-  // New Session capsule starts a session.
-  expect(screen.getAllByRole('button', { name: 'New session' })).toHaveLength(1)
+  // role (the global no-drag rule would subtract it); with the capsule gone,
+  // no New-session button remains in the macOS shell.
+  expect(screen.queryByRole('button', { name: 'New session' })).toBeNull()
   expect(screen.getByTestId('custom-brand-mark')).toBeTruthy()
 })
 
@@ -295,14 +289,6 @@ describe('Windows caption tooltips', () => {
       expect(screen.getByRole('tooltip').getAttribute('data-side')).toBe('bottom')
     },
   )
-
-  it('drops the collapsed New Session bubble below the caption as well', () => {
-    vi.useFakeTimers()
-    document.documentElement.setAttribute('data-windows-titlebar', '')
-    mountShell({ collapsed: true, width: 0 })
-    hover(screen.getByRole('button', { name: 'New session' }))
-    expect(screen.getByRole('tooltip').getAttribute('data-side')).toBe('bottom')
-  })
 
   it('keeps the ordinary Web bubble beside its anchor', () => {
     vi.useFakeTimers()

@@ -39,9 +39,12 @@
   padding: 18px 10px 6px;
 }
 
-/* The brand stays in the sidebar; fixed caption controls survive zero-width collapse. */
+/* The brand stays in the sidebar; fixed caption controls survive zero-width collapse.
+   The row carries no content when no plugin claims the brand slot, so it must not
+   reserve height: an empty 40px band between the menu bar and the first row was
+   the visible result of the logo removal. */
 :global([data-windows-titlebar]) .root .logoRow {
-  height: 40px;
+  height: 0;
   margin: 0;
   padding: 0;
 }
@@ -78,11 +81,6 @@
   padding: 0;
 }
 
-:global([data-windows-titlebar]) .root:not(.collapsed) .newSession {
-  margin-top: 8px;
-  margin-left: 0;
-}
-
 :global([data-windows-titlebar]) .collapsed .panelList,
 :global([data-windows-titlebar]) .collapsed .regionArea,
 :global([data-windows-titlebar]) .collapsed .footArea {
@@ -93,24 +91,11 @@
   --dsh-windows-menu-start: 84px;
 }
 
-:global([data-windows-titlebar]) .collapsed .newSession {
-  position: fixed;
-  top: calc((var(--dsh-windows-titlebar-height) - 28px) / 2);
-  left: 48px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  z-index: 30;
-  -webkit-app-region: no-drag;
-}
-
-:global([data-windows-titlebar]) .railIn .iconButton,
-:global([data-windows-titlebar]) .railIn .newSession {
+:global([data-windows-titlebar]) .railIn .iconButton {
   animation: none;
 }
 
-:global([data-windows-titlebar]) .collapsed .toggle,
-:global([data-windows-titlebar]) .collapsed .newSession {
+:global([data-windows-titlebar]) .collapsed .toggle {
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -157,7 +142,6 @@
    horizontally fixed. Only a live collapse gets .railIn; a cold collapsed
    render stays static. */
 .railIn .iconButton,
-.railIn .newSession,
 .railIn .panelList,
 .railIn .regionArea {
   animation: rail-in 150ms var(--ds-ease-in-out) backwards;
@@ -396,84 +380,6 @@
   white-space: nowrap;
 }
 
-/* New Session leads the nav as its first uniform row — same 36px box, radius,
-   hover fill and ink as every global panel row below it (the reference sidebar
-   has no separate elevated button). Collapsed it renders as the rail's plain
-   icon control. */
-.newSession {
-  container-type: inline-size;
-  position: relative;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--dsw-space-8);
-  min-height: 36px;
-  padding: 7px var(--dsw-space-8);
-  margin: 0 2px var(--dsw-space-8);
-  box-sizing: border-box;
-  border: none;
-  border-radius: var(--dsw-radius-md);
-  background: transparent;
-  color: var(--dsw-alias-label-primary);
-  font-size: var(--dsw-font-size-base);
-  font-weight: 400;
-  line-height: var(--dsw-line-height-base);
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.newSession:hover {
-  background: var(--dsw-alias-interactive-bg-hover);
-}
-
-.collapsed .newSession {
-  align-self: flex-start;
-  width: 36px;
-  height: 36px;
-  padding: 0;
-  margin: 0 0 12px;
-  gap: 0;
-  /* The wide row is left-aligned; the rail's single glyph is centered in the
-     same 36px box, like every other rail control. */
-  justify-content: center;
-  border-color: transparent;
-  background: transparent;
-}
-
-.collapsed .newSessionContent {
-  justify-content: center;
-}
-
-.collapsed .newSession:hover {
-  background: var(--dsw-alias-interactive-bg-hover);
-}
-
-.newSessionLabel {
-  max-width: 200px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.collapsed .newSessionLabel {
-  max-width: 0;
-}
-
-.newSessionLabelMask { flex: 1; min-width: 0; }
-.newSession:is(:hover, :focus-visible) .newSessionLabelMask:has(+ .newSessionShortcut) { overflow: hidden; mask-image: linear-gradient(to right, black calc(100% - 16px), transparent); }
-.newSessionContent { display: flex; width: 100cqw; align-items: center; justify-content: flex-start; gap: var(--dsw-space-8); }
-.newSessionContent > svg { flex: none; }
-
-.newSessionShortcut {
-  opacity: 0;
-  display: inline-flex;
-  flex: none;
-  pointer-events: none;
-  font-weight: 400;
-}
-
-.newSession:is(:hover, :focus-visible) .newSessionShortcut { opacity: 1; }
-
 .panelList {
   flex: none;
   display: flex;
@@ -597,7 +503,6 @@
   .wide,
   .fading > *,
   .railIn .iconButton,
-  .railIn .newSession,
   .railIn .panelList,
   .railIn .footArea,
   .railIn .regionArea {
